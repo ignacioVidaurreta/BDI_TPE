@@ -10,7 +10,7 @@ CREATE TABLE UserTP (
         Views INT DEFAULT 0,
         UpVotes INT DEFAULT 0,
         DownVotes INT DEFAULT 0,
-        AccountID INT NOT NULL,
+        AccountID INT,
         PRIMARY KEY(Id)
 );
 
