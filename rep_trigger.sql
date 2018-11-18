@@ -8,11 +8,11 @@ BEGIN
     SELECT DownVotes INTO downvotes FROM UserTP WHERE Id == new.Id
 
     IF (upvotes < 0) THEN
-        RAISE EXCEPTION 'No se puede tener upvotes negativos'
+        upvotes:=0;
     END IF;
 
     IF (downvotes <0) THEN
-        RAISE EXCEPTION 'No se pueden tener downvotes negativos'
+        downvotes:=0;
     END IF;
 
     newRep :=
