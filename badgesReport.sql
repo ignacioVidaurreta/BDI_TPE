@@ -47,8 +47,10 @@ BEGIN
                 END IF;
                 
                 IF (headerFlag) THEN
-                        PERFORM DBMS_OUTPUT.PUT_LINE ('BADGES REPORT');
+                        PERFORM DBMS_OUTPUT.PUT_LINE ('.                                BADGES REPORT                                .');
+                        PERFORM DBMS_OUTPUT.PUT_LINE ('-------------------------------------------------------------------------------------------');
                         PERFORM DBMS_OUTPUT.PUT_LINE ('ID       Display Name    Reputation      Badge Name      Qtty');
+                        PERFORM DBMS_OUTPUT.PUT_LINE ('-------------------------------------------------------------------------------------------');
                         headerFlag = FALSE;
                 END IF;
                 
@@ -86,7 +88,7 @@ $$ LANGUAGE plpgsql;
 
 DO $$
 BEGIN
-        PERFORM BadgesReport(97622, 97630);
+        PERFORM BadgesReport(2, 5);
         EXCEPTION
         WHEN SQLSTATE 'ERR01' THEN RAISE NOTICE '% %', SQLSTATE, SQLERRM;
 END;
