@@ -4,8 +4,8 @@ DECLARE
     downvotes INT;
     newRep INT;
 BEGIN
-    SELECT UpVotes INTO upvotes FROM UserTP WHERE Id == new.Id
-    SELECT DownVotes INTO downvotes FROM UserTP WHERE Id == new.Id
+    SELECT UpVotes INTO upvotes FROM UserTP WHERE Id == new.Id;
+    SELECT DownVotes INTO downvotes FROM UserTP WHERE Id == new.Id;
 
     IF (upvotes < 0) THEN
         upvotes:=0;
@@ -20,8 +20,8 @@ BEGIN
             (5 * upvotes) -
             (2 * downvotes) 
             AS INT);
-    IF (newRep < 1)
-        newRep:=1
+    IF (newRep < 1) THEN
+        newRep:=1;
     END IF;
     UPDATE UserTP SET Reputation = newRep;
     return NEW;
