@@ -1,29 +1,29 @@
 CREATE OR REPLACE FUNCTION updateRep() RETURNS TRIGGER AS $updateRep$
 DECLARE
-    upvotes INT;
-    downvotes INT;
+    aux_upvotes INT;
+    aux_downvotes INT;
     newRep INT;
 BEGIN
-    SELECT UpVotes INTO upvotes FROM UserTP WHERE Id == new.Id
-    SELECT DownVotes INTO downvotes FROM UserTP WHERE Id == new.Id
+    SELECT upvotes INTO aux_upvotes FROM UserTP WHERE Id = new.Id;
+    SELECT downvotes INTO aux_downvotes FROM UserTP WHERE Id = new.Id;
 
-    IF (upvotes < 0) THEN
-        RAISE EXCEPTION 'No se puede tener upvotes negativos'
+    IF (aux_upvotes < 0) THEN
+        aux_upvotes:=0;
     END IF;
 
-    IF (downvotes <0) THEN
-        RAISE EXCEPTION 'No se pueden tener downvotes negativos'
+    IF (aux_downvotes <0) THEN
+        aux_downvotes:=0;
     END IF;
 
     newRep :=
-        CAST((SELECT Reputation FROM UserTP WHERE Id == new.Id) + 
-            (5 * upvotes) -
-            (2 * downvotes) 
+        CAST((SELECT Reputation FROM UserTP WHERE Id = new.Id) + 
+            (5 * aux_upvotes) -
+            (2 * aux_downvotes) 
             AS INT);
-    IF (newRep < 1)
-        newRep:=1
+    IF (newRep < 1) THEN
+        newRep:=1;
     END IF;
-    UPDATE UserTP SET Reputation = newRep;
+    UPDATE UserTP SET Reputation := newRep;
     return NEW;
 
 END;
