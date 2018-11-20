@@ -17,8 +17,8 @@ BEGIN
 
     newRep :=
         CAST((SELECT Reputation FROM UserTP WHERE Id = new.Id) + 
-            (5 * aux_upvotes) -
-            (2 * aux_downvotes) 
+            (5 * (aux_upvotes - old.upvotes)) -
+            (2 * (aux_downvotes -old.downvotes)) 
             AS INT);
     IF (newRep < 1) THEN
         newRep:=1;
