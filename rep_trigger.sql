@@ -23,12 +23,12 @@ BEGIN
     IF (newRep < 1) THEN
         newRep:=1;
     END IF;
-    UPDATE UserTP SET Reputation := newRep;
+    UPDATE UserTP SET Reputation = newRep;
     return NEW;
 
 END;
 $updateRep$ LANGUAGE plpgsql;
 
-CREATE TRIGGER updateRep BEFORE INSERT OR UPDATE ON UserTP
+CREATE TRIGGER updateRep AFTER INSERT OR UPDATE OF upvotes, downvotes ON UserTP
 FOR EACH ROW
     EXECUTE PROCEDURE updateRep();
