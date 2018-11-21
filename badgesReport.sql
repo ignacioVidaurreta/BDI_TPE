@@ -15,6 +15,11 @@ DECLARE
         silverBadges    INT DEFAULT 0;
         bronzeBadges    INT DEFAULT 0;
         headerFlag      BOOLEAN DEFAULT TRUE;
+        firstLine       BOOLEAN DEFAULT TRUE;
+        idLength        INT;
+        displayNameLength       INT;
+        reputationLength        INT;
+        badgeNameLength INT;
 
         userCursor      CURSOR FOR
                                 SELECT Id, displayName, reputation
@@ -38,6 +43,8 @@ BEGIN
         PERFORM DBMS_OUTPUT.ENABLE();
         PERFORM DBMS_OUTPUT.SERVEROUTPUT ('t');
         
+        idLength = 8; displayNameLength = 21; reputationLength = 24;  badgeNameLength = 20;
+        
         LOOP
                 FETCH userCursor INTO userIdVar, userDisplayName, userReputation;
                 EXIT WHEN NOT FOUND;
@@ -47,10 +54,10 @@ BEGIN
                 END IF;
                 
                 IF (headerFlag) THEN
-                        PERFORM DBMS_OUTPUT.PUT_LINE ('.                                BADGES REPORT                                .');
-                        PERFORM DBMS_OUTPUT.PUT_LINE ('-------------------------------------------------------------------------------------------');
-                        PERFORM DBMS_OUTPUT.PUT_LINE ('ID       Display Name    Reputation      Badge Name      Qtty');
-                        PERFORM DBMS_OUTPUT.PUT_LINE ('-------------------------------------------------------------------------------------------');
+                        PERFORM DBMS_OUTPUT.PUT_LINE ('.                                      BADGES REPORT                                      .');
+                        PERFORM DBMS_OUTPUT.PUT_LINE (repeat('-', 103));
+                        PERFORM DBMS_OUTPUT.PUT_LINE (format('%-8s%-20s%-20s%-20s%s', 'ID', 'Display Name', 'Reputation', 'Badge Name', 'Qtty'));
+                        PERFORM DBMS_OUTPUT.PUT_LINE (repeat('-', 103));
                         headerFlag = FALSE;
                 END IF;
                 
@@ -58,7 +65,9 @@ BEGIN
                 silverBadges = 0;
                 bronzeBadges = 0;
                 
-                PERFORM DBMS_OUTPUT.PUT (TO_CHAR(userIdVar) || '        ' || userDisplayName || '     ' || TO_CHAR(userReputation));
+                PERFORM DBMS_OUTPUT.PUT (userIdVar || repeat('.', idLength - length(to_char(userIdVar))));
+                PERFORM DBMS_OUTPUT.PUT (userDisplayName || repeat('.', displayNameLength - length(userDisplayName)));
+                PERFORM DBMS_OUTPUT.PUT (userReputation || repeat('.', reputationLength - length(to_char(userReputation))));
 
                 OPEN badgeCursor;
                 
@@ -72,12 +81,19 @@ BEGIN
                                 WHEN 3 THEN bronzeBadges = bronzeBadges + 1;
                         END CASE;
                         
-                        PERFORM DBMS_OUTPUT.PUT_LINE ('          ' || badgeName || ' ' || badgeQty);
+                        IF (firstLine) THEN
+                                PERFORM DBMS_OUTPUT.PUT_LINE (badgeName || repeat('.', badgeNameLength - length(badgeName)) || badgeQty);
+                                firstLine = FALSE;
+                        ELSE
+                                PERFORM DBMS_OUTPUT.PUT_LINE (repeat('.', idLength + displayNameLength + reputationLength + 12) || badgeName || repeat('.', badgeNameLength - length(badgeName)) || badgeQty);
+                        END IF;
                 END LOOP;
                 
-                PERFORM DBMS_OUTPUT.PUT_LINE ('GOLD Badges: ' || goldBadges);
-                PERFORM DBMS_OUTPUT.PUT_LINE ('SILVER Badges: ' || silverBadges);
-                PERFORM DBMS_OUTPUT.PUT_LINE ('BRONZE Badges: ' || bronzeBadges);
+                PERFORM DBMS_OUTPUT.PUT_LINE (repeat('.', 65) || 'GOLD Badges:' || repeat('.', 9) || goldBadges);
+                PERFORM DBMS_OUTPUT.PUT_LINE (repeat('.', 65) || 'SILVER Badges:' || repeat('.', 7) || silverBadges);
+                PERFORM DBMS_OUTPUT.PUT_LINE (repeat('.', 65) || 'BRONZE Badges:' || repeat('.', 5) || bronzeBadges);
+                
+                firstLine = TRUE;
                 
                 CLOSE badgeCursor;
         END LOOP;
@@ -88,7 +104,7 @@ $$ LANGUAGE plpgsql;
 
 DO $$
 BEGIN
-        PERFORM BadgesReport(2, 5);
+        PERFORM BadgesReport(2, 15);
         EXCEPTION
         WHEN SQLSTATE 'ERR01' THEN RAISE NOTICE '% %', SQLSTATE, SQLERRM;
 END;
