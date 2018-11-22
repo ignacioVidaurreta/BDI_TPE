@@ -1,3 +1,32 @@
+-- Creación de tablas
+CREATE TABLE UserTP (
+        Id INT,
+        Reputation INT,
+        CreationDate TIMESTAMP NOT NULL,
+        DisplayName TEXT NOT NULL,
+        LastAccessDate TIMESTAMP NOT NULL,
+        WebsiteURL TEXT,
+        UserLocation TEXT,
+        AboutMe TEXT,
+        Views INT DEFAULT 0,
+        UpVotes INT DEFAULT 0,
+        DownVotes INT DEFAULT 0,
+        AccountID INT,
+        PRIMARY KEY(Id)
+);
+
+CREATE TABLE Badges (
+        Id INT,
+        UserId INT NOT NULL,
+        BadgeName TEXT NOT NULL,
+        BadgeDate TIMESTAMP NOT NULL,
+        BadgeClass INT NOT NULL,
+        TagBased BOOLEAN NOT NULL,
+        PRIMARY KEY(Id),
+        FOREIGN KEY(UserId) REFERENCES UserTP ON DELETE CASCADE
+);
+
+-- Creación de funciones
 CREATE OR REPLACE FUNCTION BadgesReport
 (
         usuarioDesde IN UserTP.Id%type,
@@ -110,6 +139,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Creacion de función de triggers
 CREATE OR REPLACE FUNCTION updateRep() RETURNS TRIGGER AS $updateRep$
 DECLARE
     aux_upvotes INT;
@@ -171,6 +201,7 @@ BEGIN
 END;
 $checkVotes$ LANGUAGE plpgsql;
 
+--Creación de triggers
 CREATE TRIGGER checkVotes BEFORE INSERT OR UPDATE OF upvotes, downvotes ON UserTP
 FOR EACH ROW
         EXECUTE PROCEDURE checkVotes();
