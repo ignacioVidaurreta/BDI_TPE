@@ -29,4 +29,12 @@ SELECT * from UserTP where id=1;
 INSERT INTO UserTP VALUES (1, 10, TIMESTAMP '2011-05-16 15:36:38', 'Sherlock', TIMESTAMP '2011-05-16 15:36:38', NULL, NULL, NULL, 0, -3, 0,500);
 SELECT * FROM UserTP where id=1;
 
-
+DO $$
+BEGIN
+        --PERFORM BadgesReport(4, 5);
+        --PERFORM BadgesReport(2, 1);
+        PERFORM BadgesReport(1, 1);
+        EXCEPTION
+        WHEN SQLSTATE 'ERR01' THEN RAISE NOTICE '% %', SQLSTATE, SQLERRM;
+END;
+$$;
