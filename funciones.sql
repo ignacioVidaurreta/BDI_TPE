@@ -171,9 +171,6 @@ BEGIN
 END;
 $checkVotes$ LANGUAGE plpgsql;
 
-DROP TRIGGER checkvotes ON UserTP;
-DROP TRIGGER updateRep ON UserTP;
-
 CREATE TRIGGER checkVotes BEFORE INSERT OR UPDATE OF upvotes, downvotes ON UserTP
 FOR EACH ROW
         EXECUTE PROCEDURE checkVotes();
